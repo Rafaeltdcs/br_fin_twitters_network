@@ -1,0 +1,64 @@
+import tweepy
+import pandas as pd
+import os
+import json
+
+# API information client
+consumer_key = '' # put your iformation here
+consumer_key_secret = '' # put your iformation here
+access_token = '' # put your iformation here
+access_token_secret = '' # put your iformation here
+
+# API acess
+auth = tweepy.OAuthHandler(consumer_key, consumer_key_secret)
+auth.set_access_token(access_token, access_token_secret)
+api = tweepy.API(auth, wait_on_rate_limit=True)
+
+#Top Brazilian FinTwit Influencers: 14/07/19
+fin_id = ['@hbredda', '@FariaLimaElevat', '@cafecomferri', '@albuquerque_af',
+          '@PedroCerize', '@mariliadf2', '@Frases_RCampos', '@helocruz', 
+          '@jlbraga', '@BruceBarbosa88', '@THIAGOSALOMAO', '@PedrooLula', 
+          '@rationalexpec', '@gigzsss', '@RaphaFigueredo', '@Tiagogreis', 
+          '@d_delabio', '@_rschweitzer', '@luizfalvesjr', '@rbreia', 
+          '@sf2invest', '@dcohen104', '@fernandocluiz', '@brazilianequity', 
+          '@femisapien_z', '@renoirvieira', '@CarlosMaggioli', '@datonetto', 
+          '@JordanFariaLima', '@andregordon73', '@IVANKRAISER', '@bitencourtbas', 
+          '@DollarHumble', '@j_camargo_nyc', '@mfbohm', '@Guigafour', 
+          '@moneymakerbr', '@sergiosanita', '@MonkeyStocks78832432']
+
+# The same list without @
+fin1 = [nome.replace("@","") for nome in fin_id]
+
+# Create dataframe for store the information
+df1 = pd.DataFrame(columns=['Perfil', 'Seguidores'])
+
+# Function to get information
+def get_users(data):
+    ''' Get information about the user'''
+    global df1
+    for i in data:
+        n_users = api.get_user(i)
+        store = pd.DataFrame([[i, n_users]], columns=['Perfil', 'Seguidores'])
+        df1 = df1.append(store)
+
+# Create new columns with the numbers of followers and friends
+df1['n_seguidores'] = [i.followers_count for i in df1['Seguidores']]
+df1['n_seguindo'] = [i.friends_count for i in df1['Seguidores']]
+
+# Loop to get who follows who
+dici1 = {}
+for cara in fin1:
+    if cara in dici1.keys(): continue
+    else:
+        amigos=[]
+        for user in tweepy.Cursor(api.friends, screen_name=cara).items():
+            try:
+                amigos.append(user.screen_name)
+                comum = [pessoa for pessoa in amigos if pessoa in fin1]
+                dici = {cara : comum}
+                dici1.update(dici)    
+            except: continue
+            
+            
+            
+            
