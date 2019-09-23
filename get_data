@@ -25,7 +25,7 @@ fin_id = ['@hbredda', '@FariaLimaElevat', '@cafecomferri', '@albuquerque_af',
           '@femisapien_z', '@renoirvieira', '@CarlosMaggioli', '@datonetto', 
           '@JordanFariaLima', '@andregordon73', '@IVANKRAISER', '@bitencourtbas', 
           '@DollarHumble', '@j_camargo_nyc', '@mfbohm', '@Guigafour', 
-          '@moneymakerbr', '@sergiosanita', '@MonkeyStocks78832432']
+          '@moneymakerbr', '@sergiosanita', '@Monkey78832432']
 
 # The same list without @
 fin1 = [nome.replace("@","") for nome in fin_id]
