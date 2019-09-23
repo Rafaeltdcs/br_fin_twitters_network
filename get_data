@@ -2,6 +2,7 @@ import tweepy
 import pandas as pd
 import os
 import json
+from igraph import *
 
 # API information client
 consumer_key = '' # put your iformation here
@@ -58,7 +59,37 @@ for cara in fin1:
                 dici = {cara : comum}
                 dici1.update(dici)    
             except: continue
-            
-            
-            
-            
+             
+# make the dictionary into tuples
+lista=[]
+for key in dici1.keys():
+    for value in dici1[key]:
+        par = (key, value)
+        lista.append(par)             
+
+# Building the graph
+grafo = Graph(directed=True)
+grafo.add_vertices(fin1)
+grafo.add_edges(lista)
+grafo.vs['label'] = fin1
+grafo.vs['label_color'] = 'blue'
+grafo.vs['size'] = df1.n_seguidores/1000
+grafo.vs['limit_api'] = df1['limite_api']
+color_dict = {"limit": "red", "under300": "green"}
+visual_style = {}
+visual_style["vertex_color"] = [color_dict[value] for value in grafo.vs["limit_api"]]
+
+# Check
+summary(grafo)
+print(grafo)
+
+# Plot the graph
+plot(grafo, bbox = (600,600), **visual_style)
+plot(grafo, "fintwit.png", **visual_style)
+
+# Append information in data frame
+df1['conexoes_total'] = grafo.degree(mode='all') # numero de conexões
+df1['conexoes_entrada'] = grafo.degree(mode='in') # numero de conexões entrada
+df1['conexoes_saida'] = grafo.degree(mode='out') # numero de conexões saida
+df2 = df1.drop(columns=['Seguidores'])
+
